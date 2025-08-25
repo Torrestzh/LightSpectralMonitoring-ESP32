@@ -1,0 +1,18 @@
+// --- LED status by lux ---
+const char* statusText;
+if (cached_lux < TH_LOW2MED) {
+  digitalWrite(PIN_LED_RED, LOW);
+  digitalWrite(PIN_LED_YELLOW, HIGH);
+  digitalWrite(PIN_LED_GREEN, LOW);
+  statusText = "LOW";
+} else if (cached_lux < TH_MED2HIGH) {
+  digitalWrite(PIN_LED_RED, LOW);
+  digitalWrite(PIN_LED_YELLOW, LOW);
+  digitalWrite(PIN_LED_GREEN, HIGH);
+  statusText = "MED";
+} else {
+  digitalWrite(PIN_LED_RED, HIGH);
+  digitalWrite(PIN_LED_YELLOW, LOW);
+  digitalWrite(PIN_LED_GREEN, LOW);
+  statusText = "HIGH";
+}
