@@ -1,0 +1,11 @@
+// WiFi & MQTT 
+const char* ssid = "Torres";
+const char* password = "13028500862tzh";
+const char* mqtt_server = "broker.hivemq.com";
+
+// Topic: Real time and state separation
+const char* MQTT_TOPIC_LIVE   = "esp32/light_sensor_data/live";    // Real time streaming (without reservation)
+const char* MQTT_TOPIC_STATUS = "esp32/light_sensor_data/status";  // Online and offline status (reserved)
+
+WiFiClient espClient;
+PubSubClient client(espClient);
