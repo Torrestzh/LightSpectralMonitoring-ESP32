@@ -1,0 +1,6 @@
+// --- Median-of-3 (anti-spike) ---
+static inline uint16_t median3(uint16_t a, uint16_t b, uint16_t c) {
+  if ((a <= b && b <= c) || (c <= b && b <= a)) return b;
+  if ((b <= a && a <= c) || (c <= a && a <= b)) return a;
+  return c;
+}
