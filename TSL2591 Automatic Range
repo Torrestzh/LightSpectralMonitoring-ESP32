@@ -1,0 +1,33 @@
+// --- Auto-range TSL2591 ---
+void autoAdjustTSL2591() {
+  const tsl2591IntegrationTime_t times[] = {
+    TSL2591_INTEGRATIONTIME_100MS, TSL2591_INTEGRATIONTIME_200MS,
+    TSL2591_INTEGRATIONTIME_300MS, TSL2591_INTEGRATIONTIME_400MS
+  };
+  const char* timeStr[] = {"100ms","200ms","300ms","400ms"};
+  const tsl2591Gain_t gains[] = { TSL2591_GAIN_LOW, TSL2591_GAIN_MED, TSL2591_GAIN_HIGH };
+  const char* gainStr[] = {"LOW","MED","HIGH"};
+
+  for (int ti = 0; ti < 4; ++ti) {
+    tsl2591.setTiming(times[ti]);
+    for (int gi = 0; gi < 3; ++gi) {
+      tsl2591.setGain(gains[gi]);
+      delay(2);
+      (void)tsl2591.getFullLuminosity();           // throw away first
+      uint16_t fullArr[3];
+      for (int k = 0; k < 3; ++k) {
+        uint32_t lum = tsl2591.getFullLuminosity();
+        fullArr[k] = lum & 0xFFFF;                 // Full channel
+        delay(5);
+      }
+      uint16_t fullMed = median3(fullArr[0], fullArr[1], fullArr[2]);
+      if (fullMed >= TARGET_LOW && fullMed <= TARGET_HIGH) {
+        TSL_time_str = timeStr[ti];
+        TSL_gain_str = gainStr[gi];
+        return;
+      }
+    }
+  }
+  TSL_time_str = timeStr[3];  // fallback: 400ms
+  TSL_gain_str = gainStr[2];  // fallback: HIGH gain
+}
