@@ -1,0 +1,29 @@
+// --- OLED dashboard ---
+display.clearDisplay();
+display.setTextSize(1);
+display.setTextColor(SSD1306_WHITE);
+display.setTextWrap(false);
+
+char line[26];
+display.setCursor(0, 0);
+snprintf(line, sizeof(line), "Lux:%5.1f  S:%s", cached_lux, statusText); display.println(line);
+
+display.setCursor(0, 8);
+snprintf(line, sizeof(line), "Full:%5u  IR:%5u", cached_full, cached_ir); display.println(line);
+
+display.setCursor(0, 16);
+snprintf(line, sizeof(line), "Vis:%5u", cached_visible); display.println(line);
+
+display.setCursor(0, 24);
+snprintf(line, sizeof(line), "NIR:%5u  Clr:%5u", cached_nir, cached_clear); display.println(line);
+
+display.setCursor(0, 32);
+snprintf(line, sizeof(line), "F1:%4u  F5:%4u", cached_f[0], cached_f[4]); display.println(line);
+display.setCursor(0, 40);
+snprintf(line, sizeof(line), "F2:%4u  F6:%4u", cached_f[1], cached_f[5]); display.println(line);
+display.setCursor(0, 48);
+snprintf(line, sizeof(line), "F3:%4u  F7:%4u", cached_f[2], cached_f[6]); display.println(line);
+display.setCursor(0, 56);
+snprintf(line, sizeof(line), "F4:%4u  F8:%4u", cached_f[3], cached_f[7]); display.println(line);
+
+display.display();
