@@ -1,0 +1,49 @@
+// --- Auto-range AS7341 ---
+uint16_t as7341ReadMaxOnce() {
+  if (!as7341.readAllChannels()) return 0;
+  uint16_t arr[10] = {
+    as7341.getChannel(AS7341_CHANNEL_415nm_F1),
+    as7341.getChannel(AS7341_CHANNEL_445nm_F2),
+    as7341.getChannel(AS7341_CHANNEL_480nm_F3),
+    as7341.getChannel(AS7341_CHANNEL_515nm_F4),
+    as7341.getChannel(AS7341_CHANNEL_555nm_F5),
+    as7341.getChannel(AS7341_CHANNEL_590nm_F6),
+    as7341.getChannel(AS7341_CHANNEL_630nm_F7),
+    as7341.getChannel(AS7341_CHANNEL_680nm_F8),
+    as7341.getChannel(AS7341_CHANNEL_CLEAR),
+    as7341.getChannel(AS7341_CHANNEL_NIR)
+  };
+  uint16_t m = 0; for (int i = 0; i < 10; i++) if (arr[i] > m) m = arr[i];
+  return m;
+}
+
+uint16_t as7341ReadMaxMedian3() {
+  (void)as7341ReadMaxOnce();
+  uint16_t m1 = as7341ReadMaxOnce(); delay(5);
+  uint16_t m2 = as7341ReadMaxOnce(); delay(5);
+  uint16_t m3 = as7341ReadMaxOnce(); delay(5);
+  return median3(m1, m2, m3);
+}
+
+void autoAdjustAS7341() {
+  const uint16_t astepList[] = {100, 300, 600, 900};
+  const as7341_gain_t gainList[] = {AS7341_GAIN_1X, AS7341_GAIN_4X, AS7341_GAIN_16X};
+  const char* gainStr[] = {"1X","4X","16X"};
+
+  as7341.setATIME(AS_atime); // fixed ATIME
+  for (int ai = 0; ai < 4; ++ai) {
+    as7341.setASTEP(astepList[ai]);
+    for (int gi = 0; gi < 3; ++gi) {
+      as7341.setGain(gainList[gi]);
+      delay(2);
+      uint16_t maxMed = as7341ReadMaxMedian3();
+      if (maxMed >= TARGET_LOW && maxMed <= TARGET_HIGH) {
+        AS_astep = astepList[ai];
+        AS_gain_str = gainStr[gi];
+        return;
+      }
+    }
+  }
+  AS_astep = astepList[3];     // fallback
+  AS_gain_str = gainStr[2];
+}
