@@ -1,0 +1,15 @@
+// --- MQTT connect with LWT & reconnect ---
+bool mqttConnect(PubSubClient& client) {
+  String cid = "ESP32-" + String((uint32_t)ESP.getEfuseMac(), HEX);
+  const char* willMsg = "{\"status\":\"offline\"}";  // LWT
+  bool ok = client.connect(cid.c_str(), TOPIC_STATUS, 0, true, willMsg);
+  if (ok) client.publish(TOPIC_STATUS, "{\"status\":\"online\"}", true);
+  return ok;
+}
+
+void reconnect_mqtt(PubSubClient& client) {
+  if (!client.connected() && WiFi.status() == WL_CONNECTED) {
+    if (mqttConnect(client)) Serial.println("MQTT connected");
+    else                     Serial.println("MQTT connect failed");
+  }
+}
